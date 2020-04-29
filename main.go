@@ -14,11 +14,14 @@ import (
 )
 
 func main() {
-	labels := []string{"dbcon", "state"}
 	psql_query_state := promauto.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "psql_query_state",
 		Help: "psql query by user with state",
-	}, labels)
+	}, []string{"dbcon", "state"})
+	psql_query_errors_total := promauto.NewCounterVec(prometheus.CounterOpts{
+		Name: "psql_query_errors_total",
+		Help: "psql query error by db connections",
+	}, []string{"dbcon"})
 	http.Handle("/metrics", promhttp.Handler())
 	go http.ListenAndServe(":2112", nil)
 	for {
@@ -29,12 +32,14 @@ func main() {
 				//				fmt.Println(envLine[1])
 				db, err := sql.Open("postgres", envLine[1])
 				if err != nil {
-					panic(err)
+					psql_query_errors_total.WithLabelValues(envLine[0]).Inc()
+					continue
 				}
 				defer db.Close()
 				rows, err := db.Query("SELECT count(state),state FROM pg_stat_activity where state<>'idle' group by state;")
 				if err != nil {
-					print(err.Error())
+					psql_query_errors_total.WithLabelValues(envLine[0]).Inc()
+					continue
 				}
 				defer rows.Close()
 				for rows.Next() {
