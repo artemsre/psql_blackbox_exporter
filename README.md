@@ -5,7 +5,7 @@ The service iterate thought enviropment variables and uses any with name 'psql_.
 
 Run 'SELECT count(state),state FROM pg_stat_activity where state<>'idle' group by state;' for each of them and provide gauge metrics like this:
 
-# HELP psql_query_errors_total psql query error by db connections
+```# HELP psql_query_errors_total psql query error by db connections
 # TYPE psql_query_errors_total counter
 psql_query_errors_total{dbcon="psql_users_app_pre"} 1
 psql_query_errors_total{dbcon="psql_action_app_stg"} 1
@@ -14,4 +14,4 @@ psql_query_errors_total{dbcon="psql_action_app_stg"} 1
 psql_query_state{dbcon="psql_users_app_pre",state="active"} 1
 psql_query_state{dbcon="psql_action_app_stg",state="active"} 1
 psql_query_state{dbcon="psql_action_app_stg",state="idle in transaction"} 2
-
+```
