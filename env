@@ -1,0 +1,3 @@
+env example
+export psql_users_app_pre='postgres://users_app_pre:PASS@pg-saas-pre:5432/users_db_pre?sslmode=disable'
+export psql_action_app_stg='postgres://action_app_staging:PASS@pg-saas-pre:5432/action_db_staging?sslmode=disable'
